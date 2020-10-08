@@ -18,7 +18,8 @@ MachineLearning::MachineLearning(uint32_t _num_of_inputs, uint32_t _num_of_neuro
 
 void MachineLearning::initNet(int seed)
 {
-    float k = 2.4f / (num_of_inputs + 1);
+    // glorot uniform
+    float k = sqrt(6.0f / ((float)num_of_inputs + (float)num_of_neurons));
 
     // init rand()
     srand(seed);
@@ -42,17 +43,13 @@ void MachineLearning::getOutput(float *_in)
         {
             output[m] += weights[m][n] * _in[n];
         }
-        output[m] = linear(output[m], -1.00f, 1.00f);
-   	   //output[m] = sigmoida(output[m]);
-        //output[m] = signum(output[m]);
+        output[m] = linear(output[m], 0.0f, 1.0f);
     }
 }
 
 float MachineLearning::linear(float _x, float _min, float _max)
 {
-    if (_x >= _max)      return _max;
-    else if (_x <= _min) return _min;
-    else                 return _x;
+    return fmin(fmax(_x, _min), _max);
 }
 
 float MachineLearning::signum(float _x)

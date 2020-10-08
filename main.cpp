@@ -18,7 +18,7 @@ void DoProgress(const char *label, int step, int total);
 
 int main(int argc, char *argv[])
 {
-    float **inputs, **o, E_local = 0, E_global = 0, E_global_1000last = 0, delta;
+    float **inputs, **o, E_local = 0, E_global = 0, delta;
     char buffer_line[256], ch;
     uint32_t num_of_inputs, num_of_neurons, num_of_patterns;
 
@@ -64,11 +64,15 @@ int main(int argc, char *argv[])
     int v = 0;
     while (feof(f_IN) == 0)
     {
+        // clear mem
+        memset(buffer_line, 0x00, sizeof(buffer_line));
+
+        // read line
         fgets(buffer_line, sizeof(buffer_line), f_IN);
-        //std::cout << "buffer_line = " << buffer_line;
+        //std::cout << "buffer_line = " << buffer_line << ", " << strlen(buffer_line) << "\n";
 
         // find blank line
-        if (buffer_line[0] != '\n')
+        if (strlen(buffer_line) > 0)
         {
             inputs[v][0] = 1.0f;
             std::cout << "inputs[" << v << "][0] = 1  ";
@@ -100,9 +104,6 @@ int main(int argc, char *argv[])
     //  init net
     net->initNet(time(NULL));
 
-    //  set non-blocking to console stream
-    //ioctlsocket(0, FIONBIO, );
-
     //  Training
     for (uint32_t iteration = 0; iteration <= iteration_MAX; iteration ++)
     {
@@ -126,16 +127,6 @@ int main(int argc, char *argv[])
             std::cout << "\nTraining done successful.\n";
             break; 
         }
-        if ((iteration % 5000) == 0)
-        {
-            if (fabsf(E_global - E_global_1000last) < error_max)
-            {
-                std::cout << "\nTraining done, error is stable.\n";
-                //break;                 
-            }
-            E_global_1000last = E_global;
-        }
-
         DoProgress("Training: ", iteration, iteration_MAX);
         fflush(stdout);
     }

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>
+#include <iomanip>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -194,8 +195,12 @@ void DoProgress(const char *label, int step, int total)
         std::cout << ">>";
  
         //fill progress bar with spaces
-        printf( "% *c", (width - pos + 1), ']');
-        printf(" %03.2f%%\r", percent);
+  		std::cout << std::setfill(' ') << std::setw(width - pos + 1);
+		std::cout << "] ";
+		std::cout << std::fixed;
+    	std::cout << std::setprecision(2);
+    	std::cout << percent;
+		std::cout << "%\r";
 
         percent_old = percent;
     }
